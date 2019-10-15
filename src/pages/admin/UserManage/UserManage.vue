@@ -1,4 +1,5 @@
 <template>
+  <div>
   <div class="contentRight">
     <div class="content_page">
       <div class="pages">
@@ -31,6 +32,7 @@
             <thead>
             <tr>
               <th><input type="checkbox"></th>
+              <th>头像</th>
               <th>姓名</th>
               <th>性别</th>
               <th>手机号</th>
@@ -40,31 +42,20 @@
             </tr>
             </thead>
             <tbody>
-            <tr>
+            <tr v-for="(user,index) in userlist.data" :key="index">
               <td><input type="checkbox"></td>
-              <td>张三</td>
-              <td>男</td>
-              <td>15902023232</td>
-              <td>河南省新乡市</td>
-              <td>无备注</td>
-              <td><i class="iconfont icon-chakan" title="查看"></i>
+              <td><img src="" alt="用户头像"></td>
+              <td>{{user.username}}</td>
+              <td>{{user.gender}}</td>
+              <td>{{user.phone}}</td>
+              <td>{{user.city}}</td>
+              <td>{{user.remarks}}</td>
+              <td><i class="iconfont icon-chakan" title="查看" @click="showmodel"></i>
                 <i class="iconfont icon-bianji" title="编辑"></i>
                 <i class="iconfont icon-shanchu" title="删除"></i>
               </td>
             </tr>
-            <tr>
-              <td><input type="checkbox"></td>
-              <td>张三</td>
-              <td>男</td>
-              <td>15902023232</td>
-              <td>河南省新乡市</td>
-              <td>无备注</td>
-              <td>
-                <i class="iconfont icon-chakan" title="查看"></i>
-                <i class="iconfont icon-bianji" title="编辑"></i>
-                <i class="iconfont icon-shanchu" title="删除"></i>
-              </td>
-            </tr>
+
             </tbody>
           </table>
         </div>
@@ -80,12 +71,90 @@
       </div>
     </div>
   </div>
+    <div :class="!model?'add_modal':'add_modal tran_scale'">
+      <form>
+        <div class="modal_tit">添加用户</div>
+        <div class="modal_oper" @click="closemodel">
+          <a href="javascript:;" class="oper_close"></a>
+        </div>
+        <div class="modal_con">
+          <div class="con_input">
+            <div class="con_input_l con_input_alike">
+              <span>头像</span>
+            </div>
+            <div class="con_input_r con_input_alike"></div>
+          </div>
+          <div class="con_input">
+            <div class="con_input_l con_input_alike">
+              <span>姓名</span>
+            </div>
+            <input class="con_input_r con_input_alike" type="text" placeholder="请输入姓名" />
+          </div>
+          <div class="con_input">
+            <div class="con_input_l con_input_alike">
+              <span>性别</span>
+            </div>
+            <input class="con_input_r con_input_alike" type="text" placeholder="请输入性别" />
+          </div>
+          <div class="con_input">
+            <div class="con_input_l con_input_alike">
+              <span>手机号</span>
+            </div>
+            <input class="con_input_r con_input_alike" type="text" placeholder="请输入手机号" />
+          </div>
+          <div class="con_input">
+            <div class="con_input_l con_input_alike">
+              <span>所在城市</span>
+            </div>
+            <input class="con_input_r con_input_alike" type="text" placeholder="请输入所在城市" />
+          </div>
+          <div class="con_input">
+            <div class="con_input_l con_input_alike">
+              <span>备注</span>
+            </div>
+            <input class="con_input_r con_input_alike" type="text" placeholder="请输入备注" />
+          </div>
+
+        </div>
+        <div class="modal_sub">
+          <a class="sub_yes">提交</a>
+          <a @click="closemodel" class="sub_no">取消</a>
+        </div>
+      </form>
+    </div>
+
+      <div v-show="model" class="shadow" @click="closemodel"></div>
+  </div>
 </template>
 
 <script>
-    export default {
-        name: "usermanage"
+  import {requser} from "../../../api";
+
+  export default {
+    data(){
+      return{
+        userlist:{}, //用户信息集合
+        model:false, //模态框状态 false关闭  true打开
+      }
+    },
+    methods:{
+      //获取用户信息
+      async getuser () {
+         this.userlist = await requser;
+      },
+      //打开模态框
+      showmodel(){
+        this.model = true
+      },
+      //关闭添加模态框
+      closemodel(){
+        this.model = false
+      }
+    },
+    mounted() {
+      this.getuser()
     }
+  }
 </script>
 
 <style scoped>
@@ -198,4 +267,5 @@
   .pages_pagin .page-link {
     padding: 0.4rem 0.75rem !important;
   }
+
 </style>

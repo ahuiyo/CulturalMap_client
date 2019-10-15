@@ -2,8 +2,8 @@
   <div class="navLeft">
     <div class="navLeft_side">
       <ul class="side_list">
-        <li><a class="active" href="">用户管理</a></li>
-        <li><a href="">个人信息</a></li>
+        <li><a href="javascript:;" class="active" @click="goTo('/usermanage')">用户管理</a></li>
+        <li><a href="javascript:;" >个人信息</a></li>
       </ul>
     </div>
   </div>
@@ -11,7 +11,11 @@
 
 <script>
     export default {
-        name: "navLeft"
+      methods: {
+        goTo (path) {
+          this.$router.replace(path)
+        }
+      }
     }
 </script>
 
