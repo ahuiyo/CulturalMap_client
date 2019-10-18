@@ -12,12 +12,12 @@
               <i class="iconfont icon-tubiaozhizuomoban-"></i>
               添加
             </button>
-            <form class="pages_title_search">
-              <input class="search_input" placeholder="请输入用户名"/>
-              <button class="search" title="搜索">
+            <div class="pages_title_search">
+              <input class="search_input" v-model="searchcode" placeholder="请输入用户名"/>
+              <button class="search" title="搜索" @click="getsearch" >
                 <i class="iconfont icon-sousuo"></i>
               </button>
-            </form>
+            </div>
             <div class="title_user">
                         <span class="user_icon" title="导出表格">
                                 <i class="iconfont icon-daochu"></i>
@@ -140,13 +140,16 @@
 
 <script>
     import {mapState} from 'vuex'
-    import {reqadduser,reqedituser,reqdeluser} from './../../../api'
+
+    import {reqadduser,reqdeluser,reqedituser,reqsearchuser} from './../../../api'
+
     export default {
         data() {
             return {
                 // userList: {}, //用户信息集合
                 model: false, //模态框状态 false关闭  true打开
                 modelStyle:1, // 1表示此次操作为添加  2表示为查看  3 编辑
+                searchcode:'',//搜索值
                 //添加的用户信息
                 id:'',
                 username:'',
@@ -165,6 +168,17 @@
           ...mapState(['userlist'])
         },
         methods: {
+            //搜索
+            async getsearch(){
+                const name =this.searchcode;
+                const result=await reqsearchuser(name);
+                if(result.code === 0){
+                    alert(result.msg);
+                    this.userlist=result.data;
+                }else{
+                    alert(result.msg)
+                }
+            },
             //获取用户信息
             // async getUser() {
             //     const result = await requser;
@@ -188,7 +202,7 @@
                 }
                 reader.readAsDataURL(file)
             },
-            //上传添加用户
+//上传添加用户
             async adduser(){
                 const formdata =new FormData();
                 formdata.append('username',this.username);
