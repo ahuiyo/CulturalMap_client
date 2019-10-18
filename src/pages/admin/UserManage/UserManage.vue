@@ -53,7 +53,7 @@
                 <td>{{user.remarks}}</td>
                 <td><i class="iconfont icon-chakan" title="查看" @click="lookChangeModel(index)"></i>
                   <i class="iconfont icon-bianji" title="编辑" @click="editChangeModel(index)"></i>
-                  <i class="iconfont icon-shanchu" title="删除"></i>
+                  <i class="iconfont icon-shanchu" title="删除" @click="deluser(user._id)"></i>
                 </td>
               </tr>
 
@@ -140,7 +140,7 @@
 
 <script>
     import {mapState} from 'vuex'
-    import {reqadduser,reqedituser} from './../../../api'
+    import {reqadduser,reqedituser,reqdeluser} from './../../../api'
     export default {
         data() {
             return {
@@ -217,6 +217,15 @@
                 const result = await reqedituser(formdata);
                 console.log(result)
                 if(result.code===0){
+                    alert(result.data);
+                    location.reload();
+                }
+            },
+            //删除用户
+            async deluser(id){
+                const result = await reqdeluser(id);
+                console.log(result)
+                if(result.code===0) {
                     alert(result.data);
                     location.reload();
                 }
