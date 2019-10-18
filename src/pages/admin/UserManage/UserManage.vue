@@ -77,7 +77,8 @@
     <div :class="!model?'add_modal':'add_modal tran_scale'">
       <form>
         <div class="modal_tit" v-if="modelStyle === 1">添加用户</div>
-        <div class="modal_tit" v-else>查看用户信息</div>
+        <div class="modal_tit" v-if="modelStyle===2">查看用户信息</div>
+        <div class="modal_tit" v-if="modelStyle===3">修改用户信息</div>
         <div class="modal_oper" @click="closeModel">
           <a href="javascript:;" class="oper_close"></a>
         </div>
@@ -98,36 +99,37 @@
             <div class="con_input_l con_input_alike">
               <span>姓名</span>
             </div>
-            <input name="username" :disabled="modelStyle!==3" v-model="username" class="con_input_r con_input_alike" type="text" placeholder="请输入姓名"/>
+            <input name="username" :disabled="modelStyle===2" v-model="username" class="con_input_r con_input_alike" type="text" placeholder="请输入姓名"/>
           </div>
           <div class="con_input">
             <div class="con_input_l con_input_alike">
               <span>性别</span>
             </div>
-            <input name="gender" :disabled="modelStyle!==3" v-model="gender" class="con_input_r con_input_alike" type="text" placeholder="请输入性别"/>
+            <input name="gender" :disabled="modelStyle===2" v-model="gender" class="con_input_r con_input_alike" type="text" placeholder="请输入性别"/>
           </div>
           <div class="con_input">
             <div class="con_input_l con_input_alike">
               <span>手机号</span>
             </div>
-            <input name="phone" :disabled="modelStyle!==3" v-model="phone" class="con_input_r con_input_alike" type="text" placeholder="请输入手机号"/>
+            <input name="phone" :disabled="modelStyle===2" v-model="phone" class="con_input_r con_input_alike" type="text" placeholder="请输入手机号"/>
           </div>
           <div class="con_input">
             <div class="con_input_l con_input_alike">
               <span>所在城市</span>
             </div>
-            <input name="city" :disabled="modelStyle!==3" v-model="city" class="con_input_r con_input_alike" type="text" placeholder="请输入所在城市"/>
+            <input name="city" :disabled="modelStyle===2" v-model="city" class="con_input_r con_input_alike" type="text" placeholder="请输入所在城市"/>
           </div>
           <div class="con_input">
             <div class="con_input_l con_input_alike">
               <span>备注</span>
             </div>
-            <input name="remarks" :disabled="modelStyle!==3"  v-model="remarks"  class="con_input_r con_input_alike" type="text" placeholder="请输入备注"/>
+            <input name="remarks" :disabled="modelStyle===2"  v-model="remarks"  class="con_input_r con_input_alike" type="text" placeholder="请输入备注"/>
           </div>
 
         </div>
         <div class="modal_sub">
-          <a @click="adduser" href="javascript:;" class="sub_yes">提交</a>
+          <a v-if="modelStyle===1" @click="adduser" href="javascript:;"  class="sub_yes">提交</a>
+          <a v-if="modelStyle===3" @click="edituser" href="javascript:;"  class="sub_yes">提交</a>
           <a @click="closeModel" class="sub_no">取消</a>
         </div>
       </form>
@@ -138,7 +140,7 @@
 
 <script>
     import {mapState} from 'vuex'
-    import {reqadduser} from './../../../api'
+    import {reqadduser,reqedituser} from './../../../api'
     export default {
         data() {
             return {
@@ -146,6 +148,7 @@
                 model: false, //模态框状态 false关闭  true打开
                 modelStyle:1, // 1表示此次操作为添加  2表示为查看  3 编辑
                 //添加的用户信息
+                id:'',
                 username:'',
                 avatar:'',
                 gender:'',
@@ -198,10 +201,26 @@
                 console.log(result)
                 if(result.code===0){
                     alert(result.data);
-                    this.goTo('/usermanage')
+                    location.reload();
                 }
             },
-
+            //编辑用户上传  未解决 不修改头像时 报错
+            async edituser(){
+                const formdata =new FormData();
+                formdata.append('id',this.id);
+                formdata.append('username',this.username);
+                formdata.append('gender',this.gender);
+                formdata.append('phone',this.phone);
+                formdata.append('city',this.city);
+                formdata.append('remarks',this.remarks);
+                formdata.append('avatar',this.file);
+                const result = await reqedituser(formdata);
+                console.log(result)
+                if(result.code===0){
+                    alert(result.data);
+                    location.reload();
+                }
+            },
             // 模态框事件变换  -- 查看
             lookChangeModel(index){
                 this.modelStyle = 2;
@@ -227,6 +246,7 @@
                 this.phone = this.userlist[index].phone;
                 this.city = this.userlist[index].city;
                 this.remarks = this.userlist[index].remarks;
+                this.id = this.userlist[index]._id;
             },
 
             //打开模态框
@@ -255,6 +275,7 @@
     bottom: 0px;
     left: 220px;
     overflow: hidden;
+    overflow-y: auto;
     z-index: 1;
     background-color: #F1F1F1;
   }
