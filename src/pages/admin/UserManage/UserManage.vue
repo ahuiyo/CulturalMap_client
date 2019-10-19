@@ -13,8 +13,8 @@
               添加
             </button>
             <div class="pages_title_search">
-              <input class="search_input" v-model="searchcode" placeholder="请输入用户名"/>
-              <button class="search" title="搜索" @click="getsearch" >
+              <input class="search_input" v-model="searchcode"  placeholder="请输入用户名"/>
+              <button class="search" title="搜索" @click="getsearch" @keyup.enter="getsearch" >
                 <i class="iconfont icon-sousuo"></i>
               </button>
             </div>
@@ -169,15 +169,18 @@
         },
         methods: {
             //搜索
-            async getsearch(){
-                const name =this.searchcode;
-                const result=await reqsearchuser(name);
-                if(result.code === 0){
-                    alert(result.msg);
-                    this.userlist=result.data;
-                }else{
-                    alert(result.msg)
-                }
+            // async getsearch(){
+            //     const name =this.searchcode;
+            //     const result=await reqsearchuser(name);
+            //     if(result.code === 0){
+            //         alert(result.msg);
+            //         this.userlist=result.data;
+            //     }else{
+            //         alert(result.msg)
+            //     }
+            // },
+            getsearch(){
+                this.$store.dispatch('getSearchUser',this.searchcode)
             },
             //获取用户信息
             // async getUser() {
@@ -228,8 +231,13 @@
                 formdata.append('city',this.city);
                 formdata.append('remarks',this.remarks);
                 formdata.append('avatar',this.file);
+                if(this.file === ''){
+                    formdata.append('avatarstate',0);
+                }else{
+                    formdata.append('avatarstate',1);
+                }
                 const result = await reqedituser(formdata);
-                console.log(result)
+                console.log(result);
                 if(result.code===0){
                     alert(result.data);
                     location.reload();
