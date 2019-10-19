@@ -32,7 +32,7 @@
             <table class="table table-bordered">
               <thead>
               <tr>
-                <th><input type="checkbox"></th>
+                <th><input type="checkbox" @change="chooseAll" v-model="isAllCheck"></th>
                 <th>头像</th>
                 <th>姓名</th>
                 <th>性别</th>
@@ -44,7 +44,7 @@
               </thead>
               <tbody>
               <tr v-for="(user,index) in userlist" :key="index">
-                <td><input type="checkbox"></td>
+                <td><input v-model="checkedList" @change="singleCheck" type="checkbox" ></td>
                 <td><img :src="'http://localhost:3000/'+user.avatar" alt="用户头像"></td>
                 <td>{{user.username}}</td>
                 <td>{{user.gender}}</td>
@@ -92,38 +92,38 @@
                 <p>更换头像</p>
               </div>
               <input name="avatar" type="file" accept="image/*" @change="oploadImg" style="display: none;" class="hiddenInput"/>
-              <img :src="avatar" alt="用户头像"/>
+              <img :src="lookUser.avatar" alt="用户头像"/>
             </div>
           </div>
           <div class="con_input">
             <div class="con_input_l con_input_alike">
               <span>姓名</span>
             </div>
-            <input name="username" :disabled="modelStyle===2" v-model="username" class="con_input_r con_input_alike" type="text" placeholder="请输入姓名"/>
+            <input name="username" :disabled="modelStyle===2" v-model="lookUser.username" class="con_input_r con_input_alike" type="text" placeholder="请输入姓名"/>
           </div>
           <div class="con_input">
             <div class="con_input_l con_input_alike">
               <span>性别</span>
             </div>
-            <input name="gender" :disabled="modelStyle===2" v-model="gender" class="con_input_r con_input_alike" type="text" placeholder="请输入性别"/>
+            <input name="gender" :disabled="modelStyle===2" v-model="lookUser.gender" class="con_input_r con_input_alike" type="text" placeholder="请输入性别"/>
           </div>
           <div class="con_input">
             <div class="con_input_l con_input_alike">
               <span>手机号</span>
             </div>
-            <input name="phone" :disabled="modelStyle===2" v-model="phone" class="con_input_r con_input_alike" type="text" placeholder="请输入手机号"/>
+            <input name="phone" :disabled="modelStyle===2" v-model="lookUser.phone" class="con_input_r con_input_alike" type="text" placeholder="请输入手机号"/>
           </div>
           <div class="con_input">
             <div class="con_input_l con_input_alike">
               <span>所在城市</span>
             </div>
-            <input name="city" :disabled="modelStyle===2" v-model="city" class="con_input_r con_input_alike" type="text" placeholder="请输入所在城市"/>
+            <input name="city" :disabled="modelStyle===2" v-model="lookUser.city" class="con_input_r con_input_alike" type="text" placeholder="请输入所在城市"/>
           </div>
           <div class="con_input">
             <div class="con_input_l con_input_alike">
               <span>备注</span>
             </div>
-            <input name="remarks" :disabled="modelStyle===2"  v-model="remarks"  class="con_input_r con_input_alike" type="text" placeholder="请输入备注"/>
+            <input name="remarks" :disabled="modelStyle===2"  v-model="lookUser.remarks"  class="con_input_r con_input_alike" type="text" placeholder="请输入备注"/>
           </div>
 
         </div>
@@ -150,15 +150,12 @@
                 model: false, //模态框状态 false关闭  true打开
                 modelStyle:1, // 1表示此次操作为添加  2表示为查看  3 编辑
                 searchcode:'',//搜索值
-                //添加的用户信息
-                id:'',
-                username:'',
-                avatar:'',
-                gender:'',
-                phone:'',
-                city:'',
-                remarks:'',
-                file:''
+
+                lookUser:{}, //添加的用户信息,查看，编辑
+
+
+                isAllCheck:false, //是否全选
+                checkedList:[],
             }
         },
         mounted() {
@@ -168,6 +165,18 @@
           ...mapState(['userlist'])
         },
         methods: {
+            // 单选事件
+              singleCheck:function(){
+                  if(this.userlist.length === this.checkedList.length){
+                      this.isAllCheck = true
+                  }else{
+                      this.isAllCheck = false
+                  }
+              },
+            //是否全选事件
+            chooseAll:function(){
+
+            },
             //搜索
             // async getsearch(){
             //     const name =this.searchcode;
@@ -197,23 +206,23 @@
             oploadImg:function(e){
                 let $target = e.target || e.srcElement
                 let file = $target.files[0];
-                this.file = $target.files[0];
+                this.lookUser.file = $target.files[0];
                 var reader = new FileReader()
                 reader.onload = (data) => {
                     let res = data.target || data.srcElement
-                    this.avatar = res.result
+                    this.lookUser.avatar = res.result
                 }
                 reader.readAsDataURL(file)
             },
 //上传添加用户
             async adduser(){
                 const formdata =new FormData();
-                formdata.append('username',this.username);
-                formdata.append('gender',this.gender);
-                formdata.append('phone',this.phone);
-                formdata.append('city',this.city);
-                formdata.append('remarks',this.remarks);
-                formdata.append('avatar',this.file);
+                formdata.append('username',this.lookUser.username);
+                formdata.append('gender',this.lookUser.gender);
+                formdata.append('phone',this.lookUser.phone);
+                formdata.append('city',this.lookUser.city);
+                formdata.append('remarks',this.lookUser.remarks);
+                formdata.append('avatar',this.lookUser.file);
                 const result = await reqadduser(formdata);
                 console.log(result)
                 if(result.code===0){
@@ -224,13 +233,13 @@
             //编辑用户上传  未解决 不修改头像时 报错
             async edituser(){
                 const formdata =new FormData();
-                formdata.append('id',this.id);
-                formdata.append('username',this.username);
-                formdata.append('gender',this.gender);
-                formdata.append('phone',this.phone);
-                formdata.append('city',this.city);
-                formdata.append('remarks',this.remarks);
-                formdata.append('avatar',this.file);
+                formdata.append('id',this.lookUser.id);
+                formdata.append('username',this.lookUser.username);
+                formdata.append('gender',this.lookUser.gender);
+                formdata.append('phone',this.lookUser.phone);
+                formdata.append('city',this.lookUser.city);
+                formdata.append('remarks',this.lookUser.remarks);
+                formdata.append('avatar',this.lookUser.file);
                 if(this.file === ''){
                     formdata.append('avatarstate',0);
                 }else{
@@ -260,6 +269,15 @@
             },
             // 模态框事件变换  -- 添加用户
             addChangeModel(){
+                this.lookUser={
+                    username:'',
+                    avatar: '',
+                    gender:'',
+                    phone:'',
+                    city:'',
+                    remarks: '',
+                    id:''
+                }
                 this.modelStyle=1;
                 this.showModel()
             },
@@ -271,13 +289,15 @@
             },
             //模态框显示某个用户
             showUser(index){
-                this.username = this.userlist[index].username;
-                this.avatar =  'http://localhost:3000/'+this.userlist[index].avatar;
-                this.gender = this.userlist[index].gender;
-                this.phone = this.userlist[index].phone;
-                this.city = this.userlist[index].city;
-                this.remarks = this.userlist[index].remarks;
-                this.id = this.userlist[index]._id;
+                this.lookUser={
+                    username:this.userlist[index].username,
+                    avatar: 'http://localhost:3000/'+this.userlist[index].avatar,
+                    gender:this.userlist[index].gender,
+                    phone:this.userlist[index].phone,
+                    city:this.userlist[index].city,
+                    remarks: this.userlist[index].remarks,
+                    id:this.userlist[index]._id
+                }
             },
 
             //打开模态框
