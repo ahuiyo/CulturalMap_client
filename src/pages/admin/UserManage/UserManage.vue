@@ -4,7 +4,7 @@
       <div class="content_page">
         <div class="pages">
           <div class="pages_title">
-            <button class="pages_title_but del" title="删除">
+            <button class="pages_title_but del" @click="delusers" title="删除">
               <i class="iconfont icon-shanchu"></i>
               批量删除
             </button>
@@ -44,9 +44,9 @@
               </thead>
               <tbody>
               <tr v-for="(user,index) in userlist" :key="index">
-                <td><input v-model="checkedList" @change="singleCheck" type="checkbox" ></td>
+                <td><input type="checkbox" v-model="checkedList" :value="index" @change="singleCheck"  /></td>
                 <td><img :src="'http://localhost:3000/'+user.avatar" alt="用户头像"></td>
-                <td>{{user.username}}</td>
+                <td>{{user.username}}==id=={{user._id}}</td>
                 <td>{{user.gender}}</td>
                 <td>{{user.phone}}</td>
                 <td>{{user.city}}</td>
@@ -141,7 +141,7 @@
 <script>
     import {mapState} from 'vuex'
 
-    import {reqadduser,reqdeluser,reqedituser,reqsearchuser} from './../../../api'
+    import {reqadduser,reqdeluser,reqedituser,reqdelusers} from './../../../api'
 
     export default {
         data() {
@@ -153,9 +153,9 @@
 
                 lookUser:{}, //添加的用户信息,查看，编辑
 
-
                 isAllCheck:false, //是否全选
-                checkedList:[],
+                checkedList:[], //选中集合
+                checkedid:'',
             }
         },
         mounted() {
@@ -175,7 +175,13 @@
               },
             //是否全选事件
             chooseAll:function(){
-
+                  if(this.isAllCheck){
+                      for(let i= 0;i<this.userlist.length;i++){
+                          this.checkedList.push(i)
+                      }
+                  }else{
+                      this.checkedList=[];
+                  }
             },
             //搜索
             // async getsearch(){
@@ -261,6 +267,21 @@
                     location.reload();
                 }
             },
+            //批量删除
+            async delusers(){
+                if(this.checkedid === ''){
+                    return ;
+                }
+                const data = {
+                    list:this.checkedid
+                };
+                const result = await reqdelusers(data);
+                console.log(result)
+                if(result.code===0) {
+                    alert(result.data);
+                    location.reload();
+                }
+            },
             // 模态框事件变换  -- 查看
             lookChangeModel(index){
                 this.modelStyle = 2;
@@ -268,8 +289,8 @@
                 this.showModel()
             },
             // 模态框事件变换  -- 添加用户
-            addChangeModel(){
-                this.lookUser={
+            (){
+                thiaddChangeModels.lookUser={
                     username:'',
                     avatar: '',
                     gender:'',
@@ -313,6 +334,15 @@
                 this.$router.replace(path)
             }
         },
+        watch:{
+            checkedList:function (val) {
+                this.checkedid='';
+                for(let i = 0; i< val.length;i++){
+                    this.checkedid+= this.userlist[i]._id+","
+                }
+                this.checkedid=this.checkedid.substring(1,this.checkedid.length-1)
+            }
+        }
 
     }
 </script>
