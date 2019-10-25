@@ -4,7 +4,7 @@
       <div class="content_page">
         <div class="pages">
           <div class="pages_title">
-            <button class="pages_title_but del" @click="delusers" title="删除">
+            <button class="pages_title_but del"  title="删除">
               <i class="iconfont icon-shanchu"></i>
               批量删除
             </button>
@@ -46,7 +46,7 @@
               <tr v-for="(user,index) in userlist" :key="index">
                 <td><input type="checkbox" v-model="checkedList" :value="index" @change="singleCheck"  /></td>
                 <td><img :src="'http://localhost:3000/'+user.avatar" alt="用户头像"></td>
-                <td>{{user.username}}==id=={{user._id}}</td>
+                <td>{{user.username}}</td>
                 <td>{{user.gender}}</td>
                 <td>{{user.phone}}</td>
                 <td>{{user.city}}</td>
@@ -141,7 +141,7 @@
 <script>
     import {mapState} from 'vuex'
 
-    import {reqadduser,reqdeluser,reqedituser,reqdelusers} from './../../../api'
+    import {reqadduser,reqdeluser,reqedituser} from './../../../api'
 
     export default {
         data() {
@@ -268,20 +268,22 @@
                 }
             },
             //批量删除
-            async delusers(){
-                if(this.checkedid === ''){
-                    return ;
-                }
-                const data = {
-                    list:this.checkedid
-                };
-                const result = await reqdelusers(data);
-                console.log(result)
-                if(result.code===0) {
-                    alert(result.data);
-                    location.reload();
-                }
-            },
+            // async delusers(){
+            //     if(this.checkedid === ''){
+            //         alert("请选择要删除的用户")
+            //         return ;
+            //     }
+            //     let list=this.checkedid.slice(",");
+            //     for(let i = 0 ; i<list.length;i++){
+            //         let result = await reqdelusers(data);
+            //         console.log(result)
+            //         if(result.code!==0) {
+            //             alert();
+            //             location.reload();
+            //         }
+            //     }
+            //
+            // },
             // 模态框事件变换  -- 查看
             lookChangeModel(index){
                 this.modelStyle = 2;
@@ -289,8 +291,8 @@
                 this.showModel()
             },
             // 模态框事件变换  -- 添加用户
-            (){
-                thiaddChangeModels.lookUser={
+            addChangeModel(){
+                this.lookUser={
                     username:'',
                     avatar: '',
                     gender:'',
