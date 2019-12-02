@@ -1,21 +1,20 @@
 <template>
   <div id="app">
-    <navTop></navTop>
+    <navTop v-show="$route.meta.bcManage"></navTop>
     <router-view/>
-    <nav-left></nav-left>
+    <nav-left v-show="$route.meta.bcManage"></nav-left>
   </div>
 </template>
 
 <script>
 
-import navTop from './components/admin/navTop/navTop'
-import navLeft from './components/admin/navLeft/navLeft'
+import NavTop from './components/Admin/NavTop/NavTop'
+import NavLeft from './components/Admin/NavLeft/NavLeft'
 export default {
     components :{
-      navTop,
-      navLeft
+      NavTop,
+      NavLeft
     }
-
 }
 </script>
 

@@ -31,16 +31,16 @@
           <div class="pages_list">
             <table class="table table-bordered">
               <thead>
-              <tr>
-                <th><input type="checkbox" @change="chooseAll" v-model="isAllCheck"></th>
-                <th>头像</th>
-                <th>姓名</th>
-                <th>性别</th>
-                <th>手机号</th>
-                <th>所在城市</th>
-                <th>备注</th>
-                <th>操作</th>
-              </tr>
+                <tr>
+                  <th><input type="checkbox" @change="chooseAll" v-model="isAllCheck"/></th>
+                  <th>头像</th>
+                  <th>姓名</th>
+                  <th>性别</th>
+                  <th>手机号</th>
+                  <th>所在城市</th>
+                  <th>备注</th>
+                  <th>操作</th>
+                </tr>
               </thead>
               <tbody>
               <tr v-for="(user,index) in userlist" :key="index">
